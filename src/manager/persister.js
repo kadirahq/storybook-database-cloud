@@ -78,6 +78,7 @@ export default class Persister {
         fields: {
           id: {},
           name: {},
+          avatar: {},
         }
       }
     };
