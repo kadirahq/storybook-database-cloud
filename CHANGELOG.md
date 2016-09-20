@@ -1,5 +1,10 @@
 ## Changelog
 
+### v2.1.1
+20 Sep 2016
+
+* Fix query not applied bug
+
 ### v2.1.0
 20 Sep 2016
 
