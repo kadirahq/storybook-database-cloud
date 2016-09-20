@@ -62,9 +62,9 @@ export default class Persister {
         const val = query[key];
         switch (typeof val) {
           case 'string':
-            return { key, op: Enum('GT'), strVal: val };
+            return { key, op: Enum('EQ'), strVal: val };
           case 'number':
-            return { key, op: Enum('GT'), numVal: val };
+            return { key, op: Enum('EQ'), numVal: val };
           default:
             // TODO handle range queries
             throw new Error('unknown sort value')
