@@ -1,5 +1,10 @@
 ## Changelog
 
+### v2.0.0
+20 Sep 2016
+
+* Remove the `token` parameter (use CORS)
+
 ### v1.1.0
 20 Sep 2016
 
