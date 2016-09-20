@@ -1,5 +1,10 @@
 ## Changelog
 
+### v2.1.2
+20 Sep 2016
+
+* Fix incorrect comparison operator bug
+
 ### v2.1.1
 20 Sep 2016
 
