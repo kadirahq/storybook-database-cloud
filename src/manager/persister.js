@@ -1,16 +1,13 @@
-import jwtDecode from 'jwt-decode';
 import graphqlify, {Enum} from 'graphqlify';
 import 'whatwg-fetch';
 
 export default class Persister {
-  constructor({ url, token, appId, database }) {
+  constructor({ url, appId, database }) {
     this.url = url;
     this.appId = appId;
-    this.token = jwtDecode(token);
     this.database = database;
     this.headers = {
       'content-type': 'application/json',
-      'x-storybooks-token': token,
     };
   }
 
@@ -27,7 +24,7 @@ export default class Persister {
     };
     const graphqlQuery = 'mutation ' + graphqlify(queryObject);
     const body = JSON.stringify({ query: graphqlQuery });
-    const params = {body, method: 'post', headers: this.headers};
+    const params = {body, method: 'post', headers: this.headers, credentials: 'include' };
     return fetch(`${this.url}`, params)
       .then(res => res.json())
       .then(res => res.data.setData);
@@ -69,7 +66,7 @@ export default class Persister {
     }
     const graphqlQuery = graphqlify(queryObject);
     const body = JSON.stringify({ query: graphqlQuery });
-    const params = {body, method: 'post', headers: this.headers};
+    const params = {body, method: 'post', headers: this.headers, credentials: 'include' };
     return fetch(`${this.url}`, params)
       .then(res => res.json())
       .then(res => res.data.data.map(str => JSON.parse(str)));;
@@ -86,7 +83,7 @@ export default class Persister {
     };
     const graphqlQuery = graphqlify(queryObject);
     const body = JSON.stringify({ query: graphqlQuery });
-    const params = {body, method: 'post', headers: this.headers};
+    const params = {body, method: 'post', headers: this.headers, credentials: 'include' };
     return fetch(`${this.url}`, params)
       .then(res => res.json())
       .then(res => res.data.user);

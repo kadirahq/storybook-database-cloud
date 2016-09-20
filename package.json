@@ -22,10 +22,7 @@
   },
   "dependencies": {
     "@kadira/storybook-database": "^2.0.1",
-    "cookies-js": "^1.2.2",
     "graphqlify": "^1.0.0",
-    "jwt-decode": "^2.1.0",
-    "qs": "^6.2.1",
     "whatwg-fetch": "^1.0.0"
   }
 }
