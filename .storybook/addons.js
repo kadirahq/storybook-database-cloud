@@ -13,6 +13,11 @@ addons.register('local/testdb', api => {
           .then(res => console.log('get:', res))
           .catch(err => console.error(err))
       }
+      const getUser = () => {
+        return addons.getDatabase().persister.getUser()
+          .then(res => console.log('user:', res))
+          .catch(err => console.error(err))
+      }
       const setTS = () => {
         return addons.getDatabase()
           .getCollection('time')
@@ -28,6 +33,7 @@ addons.register('local/testdb', api => {
       }
       return (
         <div style={style}>
+          <button onClick={getUser}>Get User</button>
           <button onClick={getTS}>Get TS</button>
           <button onClick={setTS}>Set TS</button>
         </div>
