@@ -57,12 +57,9 @@ export default class Persister {
         }
       }
     };
-    if (options.limit) {
-      queryObject.data.params.limit = options.limit;
-    }
-    if (options.query) {
-      queryObject.data.params.query = Object.keys(options.query).map(key => {
-        const val = options.query[key];
+    if (query) {
+      queryObject.data.params.query = Object.keys(query).map(key => {
+        const val = query[key];
         switch (typeof val) {
           case 'string':
             return { key, op: Enum('GT'), strVal: val };
@@ -73,6 +70,9 @@ export default class Persister {
             throw new Error('unknown sort value')
         }
       });
+    }
+    if (options.limit) {
+      queryObject.data.params.limit = options.limit;
     }
     if (options.sort) {
       queryObject.data.params.sort = Object.keys(options.sort).map(key => {
