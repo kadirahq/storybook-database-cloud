@@ -11,6 +11,25 @@ export default class Persister {
     };
   }
 
+  _queryAPI(graphqlQuery) {
+    const params = {
+      body: JSON.stringify({ query: graphqlQuery }),
+      method: 'post',
+      headers: this.headers,
+      credentials: 'include'
+    };
+    return fetch(`${this.url}`, params).then(res => {
+      if (res.status === 401) {
+        throw new Error('Unauthorized');
+      }
+      return res.json();
+    })
+    .then(res => {
+      // TODO check errors
+      return res.data;
+    });
+  }
+
   set(collection, item) {
     const queryObject = {
       setData: {
@@ -23,11 +42,9 @@ export default class Persister {
       }
     };
     const graphqlQuery = 'mutation ' + graphqlify(queryObject);
-    const body = JSON.stringify({ query: graphqlQuery });
-    const params = {body, method: 'post', headers: this.headers, credentials: 'include' };
-    return fetch(`${this.url}`, params)
-      .then(res => res.json())
-      .then(res => res.data.setData);
+    return this._queryAPI(graphqlQuery).then(data => {
+      return data.setData;
+    });
   }
 
   get(collection, query, options) {
@@ -65,11 +82,9 @@ export default class Persister {
       });
     }
     const graphqlQuery = graphqlify(queryObject);
-    const body = JSON.stringify({ query: graphqlQuery });
-    const params = {body, method: 'post', headers: this.headers, credentials: 'include' };
-    return fetch(`${this.url}`, params)
-      .then(res => res.json())
-      .then(res => res.data.data.map(str => JSON.parse(str)));;
+    return this._queryAPI(graphqlQuery).then(data => {
+      return data.data.map(str => JSON.parse(str));
+    });
   }
 
   getUser() {
@@ -83,10 +98,8 @@ export default class Persister {
       }
     };
     const graphqlQuery = graphqlify(queryObject);
-    const body = JSON.stringify({ query: graphqlQuery });
-    const params = {body, method: 'post', headers: this.headers, credentials: 'include' };
-    return fetch(`${this.url}`, params)
-      .then(res => res.json())
-      .then(res => res.data.user);
+    return this._queryAPI(graphqlQuery).then(data => {
+      return data.user;
+    });
   }
 }
