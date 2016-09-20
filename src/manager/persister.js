@@ -1,3 +1,4 @@
+import jwtDecode from 'jwt-decode';
 import graphqlify, {Enum} from 'graphqlify';
 import 'whatwg-fetch';
 
@@ -5,6 +6,7 @@ export default class Persister {
   constructor({ url, token, appId, database }) {
     this.url = url;
     this.appId = appId;
+    this.token = jwtDecode(token);
     this.database = database;
     this.headers = {
       'content-type': 'application/json',
@@ -71,5 +73,22 @@ export default class Persister {
     return fetch(`${this.url}`, params)
       .then(res => res.json())
       .then(res => res.data.data.map(str => JSON.parse(str)));;
+  }
+
+  getUser() {
+    const queryObject = {
+      user: {
+        fields: {
+          id: {},
+          name: {},
+        }
+      }
+    };
+    const graphqlQuery = graphqlify(queryObject);
+    const body = JSON.stringify({ query: graphqlQuery });
+    const params = {body, method: 'post', headers: this.headers};
+    return fetch(`${this.url}`, params)
+      .then(res => res.json())
+      .then(res => res.data.user);
   }
 }

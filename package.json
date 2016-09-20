@@ -5,7 +5,7 @@
   "main": "dist/client/index.js",
   "scripts": {
     "prepublish": "node .scripts/npm-prepublish.js",
-    "storybook": "start-storybook -p 3000",
+    "storybook": "STORYBOOK_CLOUD_URL='http://localhost:3003/graphql' STORYBOOK_CLOUD_APPID='02971a86-2477-4d9b-9226-66a3ee6a032b' STORYBOOK_CLOUD_DATABASE='test-database' start-storybook -p 3000",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "license": "MIT",
@@ -24,6 +24,7 @@
     "@kadira/storybook-database": "^2.0.1",
     "cookies-js": "^1.2.2",
     "graphqlify": "^1.0.0",
+    "jwt-decode": "^2.1.0",
     "qs": "^6.2.1",
     "whatwg-fetch": "^1.0.0"
   }
