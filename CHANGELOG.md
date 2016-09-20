@@ -1,5 +1,10 @@
 ## Changelog
 
+### v2.1.0
+20 Sep 2016
+
+* Add the `avatar` field for user
+
 ### v2.0.0
 20 Sep 2016
 
