@@ -19,8 +19,8 @@
     "shelljs": "^0.7.3"
   },
   "dependencies": {
-    "@kadira/storybook-database": "^2.0.1",
     "graphqlify": "^1.0.0",
+    "uuid": "^2.0.3",
     "whatwg-fetch": "^1.0.0"
   }
 }

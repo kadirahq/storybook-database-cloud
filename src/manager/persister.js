@@ -1,9 +1,11 @@
+import uuid from 'uuid';
 import graphqlify, {Enum} from 'graphqlify';
 import 'whatwg-fetch';
 
 export default class Persister {
   constructor({ url, appId, database }) {
     this.url = url;
+    this.uuid = uuid;
     this.appId = appId;
     this.database = database;
     this.headers = {
@@ -11,26 +13,10 @@ export default class Persister {
     };
   }
 
-  _queryAPI(graphqlQuery) {
-    const params = {
-      body: JSON.stringify({ query: graphqlQuery }),
-      method: 'post',
-      headers: this.headers,
-      credentials: 'include'
-    };
-    return fetch(`${this.url}`, params).then(res => {
-      if (res.status === 401) {
-        throw new Error('Unauthorized');
-      }
-      return res.json();
-    })
-    .then(res => {
-      // TODO check errors
-      return res.data;
-    });
-  }
-
   set(collection, item) {
+    if (!item.id) {
+      item.id = this.uuid.v4();
+    }
     const queryObject = {
       setData: {
         params: {
@@ -87,6 +73,7 @@ export default class Persister {
     });
   }
 
+  // NOTE this is not a standard method
   getUser() {
     const queryObject = {
       user: {
@@ -100,6 +87,25 @@ export default class Persister {
     const graphqlQuery = graphqlify(queryObject);
     return this._queryAPI(graphqlQuery).then(data => {
       return data.user;
+    });
+  }
+
+  _queryAPI(graphqlQuery) {
+    const params = {
+      body: JSON.stringify({ query: graphqlQuery }),
+      method: 'post',
+      headers: this.headers,
+      credentials: 'include'
+    };
+    return fetch(`${this.url}`, params).then(res => {
+      if (res.status === 401) {
+        throw new Error('Unauthorized');
+      }
+      return res.json();
+    })
+    .then(res => {
+      // TODO check errors
+      return res.data;
     });
   }
 }
