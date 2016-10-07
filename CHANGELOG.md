@@ -1,5 +1,10 @@
 ## Changelog
 
+### v2.2.0
+7 Oct 2016
+
+* Automatically detect the app using git repo information [PR1](https://github.com/kadirahq/storybook-database-cloud/pull/1)
+
 ### v2.1.2
 20 Sep 2016
 
