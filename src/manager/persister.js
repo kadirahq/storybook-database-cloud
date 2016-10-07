@@ -3,11 +3,11 @@ import graphqlify, {Enum} from 'graphqlify';
 import 'whatwg-fetch';
 
 export default class Persister {
-  constructor({ url, appId, database }) {
-    this.url = url;
-    this.uuid = uuid;
-    this.appId = appId;
-    this.database = database;
+  // options => { server, appId, database, origin, branch }
+  constructor(options) {
+    this.options = options;
+    this._uuid = uuid;
+    this._info = null;
     this.headers = {
       'content-type': 'application/json',
     };
@@ -15,30 +15,35 @@ export default class Persister {
 
   set(collection, item) {
     if (!item.id) {
-      item.id = this.uuid.v4();
+      item.id = this._uuid.v4();
     }
     const queryObject = {
       setData: {
         params: {
-          appId: this.appId,
-          database: this.database,
+          appId: null,
+          database: null,
           collection,
           jsonData: JSON.stringify(item),
         }
       }
     };
-    const graphqlQuery = 'mutation ' + graphqlify(queryObject);
-    return this._queryAPI(graphqlQuery).then(data => {
-      return data.setData;
-    });
+    return this._getAppInfo()
+      .then(info => {
+        queryObject.setData.params.appId = info.appId;
+        queryObject.setData.params.database = info.database;
+        return this._queryAPI('mutation ' + graphqlify(queryObject));
+      })
+      .then(data => {
+        return data.setData;
+      });
   }
 
   get(collection, query, options) {
     const queryObject = {
       data: {
         params: {
-          appId: this.appId,
-          database: this.database,
+          appId: null,
+          database: null,
           collection,
         }
       }
@@ -67,14 +72,18 @@ export default class Persister {
         return { key, order }
       });
     }
-    const graphqlQuery = graphqlify(queryObject);
-    return this._queryAPI(graphqlQuery).then(data => {
-      return data.data.map(str => JSON.parse(str));
-    });
+    return this._getAppInfo()
+      .then(info => {
+        queryObject.data.params.appId = info.appId;
+        queryObject.data.params.database = info.database;
+        return this._queryAPI(graphqlify(queryObject));
+      })
+      .then(data => {
+        return data.data.map(str => JSON.parse(str));
+      });
   }
 
-  // NOTE this is not a standard method
-  getUser() {
+  _getUser() {
     const queryObject = {
       user: {
         fields: {
@@ -90,6 +99,48 @@ export default class Persister {
     });
   }
 
+  _getAppInfo() {
+    if (this._info) {
+      return Promise.resolve(this._info);
+    }
+    if (this.options.appId && this.options.database) {
+      const { appId, database } = this.options;
+      this._info = { appId, database };
+      return Promise.resolve(this._info);
+    }
+    // TODO parse the url instead of using a regular expression
+    // NOTE regex examples: https://regex101.com/r/qv1uuz/1
+    const regex = /github\.com(?:\/|\:)(\S+?)\/(\S+?)(?:\.git)?$/i;
+    const match = regex.exec(this.options.origin);
+    const queryObject = {
+      appByRepo: {
+        params: {
+          repoOrg: match[1],
+          repoName: match[2],
+        },
+        fields: {
+          id: {},
+          branch: {
+            params: {
+              name: this.options.branch,
+            },
+            fields: {
+              group: {},
+            },
+          },
+        },
+      },
+    };
+    const graphqlQuery = graphqlify(queryObject);
+    return this._queryAPI(graphqlQuery).then(data => {
+      this._info = {
+        appId: data.appByRepo.id,
+        database: data.appByRepo.branch.group,
+      };
+      return Promise.resolve(this._info);
+    });
+  }
+
   _queryAPI(graphqlQuery) {
     const params = {
       body: JSON.stringify({ query: graphqlQuery }),
@@ -97,7 +148,7 @@ export default class Persister {
       headers: this.headers,
       credentials: 'include'
     };
-    return fetch(`${this.url}`, params).then(res => {
+    return fetch(`${this.options.server}`, params).then(res => {
       if (res.status === 401) {
         throw new Error('Unauthorized');
       }
