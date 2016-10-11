@@ -14,7 +14,7 @@ addons.register('local/testdb', api => {
           .catch(err => console.error(err))
       }
       const getUser = () => {
-        return addons.getDatabase().persister.getUser()
+        return addons.getDatabase().persister._getUser()
           .then(res => console.log('user:', res))
           .catch(err => console.error(err))
       }
@@ -23,6 +23,13 @@ addons.register('local/testdb', api => {
           .getCollection('time')
           .set({ id: 'test', ts: Date.now() })
           .then(res => console.log('set:', res))
+          .catch(err => console.error(err))
+      }
+      const delTS = () => {
+        return addons.getDatabase()
+          .getCollection('time')
+          .del({ id: 'test' })
+          .then(res => console.log('del:', res))
           .catch(err => console.error(err))
       }
       const style = {
@@ -36,6 +43,7 @@ addons.register('local/testdb', api => {
           <button onClick={getUser}>Get User</button>
           <button onClick={getTS}>Get TS</button>
           <button onClick={setTS}>Set TS</button>
+          <button onClick={delTS}>Del TS</button>
         </div>
       )
     }
