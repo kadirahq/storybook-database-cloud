@@ -11,4 +11,8 @@ export default class Collection {
   get(query, options = {}) {
     return this.persister.get(this.name, query, options);
   }
+
+  del(query) {
+    return this.persister.del(this.name, query);
+  }
 }

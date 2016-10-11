@@ -49,18 +49,7 @@ export default class Persister {
       }
     };
     if (query) {
-      queryObject.data.params.query = Object.keys(query).map(key => {
-        const val = query[key];
-        switch (typeof val) {
-          case 'string':
-            return { key, op: Enum('EQ'), strVal: val };
-          case 'number':
-            return { key, op: Enum('EQ'), numVal: val };
-          default:
-            // TODO handle range queries
-            throw new Error('unknown sort value')
-        }
-      });
+      queryObject.data.params.query = this._makeGraphQLQuery(query);
     }
     if (options.limit) {
       queryObject.data.params.limit = options.limit;
@@ -80,6 +69,30 @@ export default class Persister {
       })
       .then(data => {
         return data.data.map(str => JSON.parse(str));
+      });
+  }
+
+  del(collection, query) {
+    const queryObject = {
+      delData: {
+        params: {
+          appId: null,
+          database: null,
+          collection,
+        }
+      }
+    };
+    if (query) {
+      queryObject.delData.params.query = this._makeGraphQLQuery(query);
+    }
+    return this._getAppInfo()
+      .then(info => {
+        queryObject.delData.params.appId = info.appId;
+        queryObject.delData.params.database = info.database;
+        return this._queryAPI('mutation ' + graphqlify(queryObject));
+      })
+      .then(data => {
+        return data.delData;
       });
   }
 
@@ -138,6 +151,21 @@ export default class Persister {
         database: data.appByRepo.branch.group,
       };
       return Promise.resolve(this._info);
+    });
+  }
+
+  _makeGraphQLQuery(query) {
+    return Object.keys(query).map(key => {
+      const val = query[key];
+      switch (typeof val) {
+        case 'string':
+          return { key, op: Enum('EQ'), strVal: val };
+        case 'number':
+          return { key, op: Enum('EQ'), numVal: val };
+        default:
+          // TODO handle range queries
+          throw new Error('unknown sort value')
+      }
     });
   }
 
