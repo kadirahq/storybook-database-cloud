@@ -1,5 +1,10 @@
 ## Changelog
 
+### v2.3.0
+11 Oct 2016
+
+* Add Collection.del method to delete documents [PR2](https://github.com/kadirahq/storybook-database-cloud/pull/2)
+
 ### v2.2.0
 7 Oct 2016
 
