@@ -1,6 +1,11 @@
 ## Changelog
 
 ### v2.3.0
+19 Oct 2016
+
+* Handle null data result [PR3](https://github.com/kadirahq/storybook-database-cloud/pull/3)
+
+### v2.3.0
 11 Oct 2016
 
 * Add Collection.del method to delete documents [PR2](https://github.com/kadirahq/storybook-database-cloud/pull/2)
