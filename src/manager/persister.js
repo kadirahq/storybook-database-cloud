@@ -68,6 +68,9 @@ export default class Persister {
         return this._queryAPI(graphqlify(queryObject));
       })
       .then(data => {
+        if (!data.data) {
+          return [];
+        }
         return data.data.map(str => JSON.parse(str));
       });
   }
