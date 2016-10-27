@@ -1,6 +1,11 @@
 ## Changelog
 
-### v2.3.0
+### v2.3.2
+27 Oct 2016
+
+* Validate app info query output [PR4](https://github.com/kadirahq/storybook-database-cloud/pull/4)
+
+### v2.3.1
 19 Oct 2016
 
 * Handle null data result [PR3](https://github.com/kadirahq/storybook-database-cloud/pull/3)
