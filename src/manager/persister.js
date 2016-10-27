@@ -29,6 +29,9 @@ export default class Persister {
     };
     return this._getAppInfo()
       .then(info => {
+        if (!info) {
+          throw new Error('Missing Storybook Hub app info');
+        }
         queryObject.setData.params.appId = info.appId;
         queryObject.setData.params.database = info.database;
         return this._queryAPI('mutation ' + graphqlify(queryObject));
@@ -63,6 +66,9 @@ export default class Persister {
     }
     return this._getAppInfo()
       .then(info => {
+        if (!info) {
+          throw new Error('Missing Storybook Hub app info');
+        }
         queryObject.data.params.appId = info.appId;
         queryObject.data.params.database = info.database;
         return this._queryAPI(graphqlify(queryObject));
@@ -90,6 +96,9 @@ export default class Persister {
     }
     return this._getAppInfo()
       .then(info => {
+        if (!info) {
+          throw new Error('Missing Storybook Hub app info');
+        }
         queryObject.delData.params.appId = info.appId;
         queryObject.delData.params.database = info.database;
         return this._queryAPI('mutation ' + graphqlify(queryObject));
@@ -149,6 +158,9 @@ export default class Persister {
     };
     const graphqlQuery = graphqlify(queryObject);
     return this._queryAPI(graphqlQuery).then(data => {
+      if (!data.appByRepo || !data.appByRepo.branch) {
+        return Promise.resolve(null);
+      }
       this._info = {
         appId: data.appByRepo.id,
         database: data.appByRepo.branch.group,
